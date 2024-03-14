@@ -1,0 +1,83 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id               String         @id @default(cuid())
+  discord_id       String?        @unique
+  nickname         String?
+  name             String?
+  birth            DateTime?
+  restingHeartRate Int?
+  Workouts         Workouts[]
+  year             UserWithYear[]
+  createdAt        DateTime       @default(now())
+  updatedAt        DateTime       @updatedAt
+}
+
+model UserWithYear {
+  id        String   @id @default(cuid())
+  user      User?    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId    String?
+  yearId    String?
+  year      Year?    @relation(fields: [yearId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Year {
+  id        String         @id @default(cuid())
+  user      UserWithYear[]
+  grade     String         @unique
+  startDate DateTime?      @default(now())
+  createdAt DateTime       @default(now())
+  updatedAt DateTime       @updatedAt
+}
+
+enum WorkoutCategory {
+  CARDIO
+  INTERVAL
+}
+
+enum WorkoutName {
+  WEIGHT_TRAINING
+  FUNCTIONAL_STRENGTH_TRAINING
+  PILATES
+  PICKLEBALL
+  YOGA
+  RUNNING
+  CYCLING
+  WALKING
+  HIIT
+  CLIMBING
+  STEPPER
+  TENNIS
+  SOCCER
+  SPINNING
+  SWIMMING
+  OTHER
+}
+
+model Workouts {
+  id            String          @id @default(cuid())
+  category      WorkoutCategory
+  minute        Int
+  heartRate     Int
+  user          User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId        String
+  point         Float
+  intensityZone Int
+  dailyLoad     Float
+  workoutName   WorkoutName?    @default(OTHER)
+  image         String
+  createdAt     DateTime        @default(now())
+  updatedAt     DateTime        @updatedAt
+}

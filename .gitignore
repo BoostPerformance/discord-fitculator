@@ -1,0 +1,6 @@
+node_modules/
+.env
+question2.json
+test.txt
+test2.ts
+test3.ts
